@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IMCP — Mockup Interativo</title>
+<style>
+:root{
+  --bg:#f5f7fb;--surface:#fff;--surface2:#f9fafc;--text:#172033;--muted:#6b7280;
+  --primary:#5447d7;--primary2:#7769f7;--line:#e6e9ef;--ok:#087f5b;--warn:#b7791f;
+  --danger:#c0392b;--shadow:0 10px 35px rgba(27,38,79,.08)
+}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit} button{cursor:pointer}
+.app{display:grid;grid-template-columns:270px minmax(0,1fr);min-height:100vh}
+.sidebar{background:linear-gradient(180deg,#17172c,#222143);color:white;padding:22px 16px;display:flex;flex-direction:column;gap:22px;position:sticky;top:0;height:100vh}
+.brand{display:flex;gap:12px;align-items:center;padding:5px 8px 18px;border-bottom:1px solid rgba(255,255,255,.1)}
+.logo{width:45px;height:45px;border-radius:14px;background:linear-gradient(135deg,#8c80ff,#5447d7);display:grid;place-items:center;font-weight:800}
+.brand small{display:block;color:#bfc2dc;margin-top:2px}
+.nav{display:grid;gap:7px}.nav button{border:0;background:transparent;color:#d8dbeb;padding:12px 13px;text-align:left;border-radius:12px;transition:.2s}
+.nav button:hover,.nav button.active{background:rgba(255,255,255,.1);color:white}
+.side-footer{margin-top:auto;background:rgba(255,255,255,.07);padding:13px;border-radius:13px;color:#cfd3e6;font-size:12px;line-height:1.5}
+.main{padding:26px 30px 50px;min-width:0}
+.header{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:20px}
+.header h1{font-size:28px;margin:0 0 5px}.header p{margin:0;color:var(--muted)}
+.badges{display:flex;gap:8px;flex-wrap:wrap}.badge{padding:7px 11px;border-radius:999px;background:white;border:1px solid var(--line);font-size:12px}.badge.purple{background:#efedff;color:#4b3dcc}
+.screen{display:none}.screen.active{display:block}
+.grid{display:grid;gap:16px}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:18px;padding:18px;min-width:0}
+.card h3{margin:0 0 13px;font-size:17px}.metric .label{color:var(--muted);font-size:13px}.metric strong{display:block;font-size:27px;margin:8px 0}.metric small{color:var(--muted)}
+.toolbar{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.btn{border:0;border-radius:11px;padding:10px 14px;font-weight:650}.btn.primary{background:var(--primary);color:white}.btn.soft{background:#efedff;color:var(--primary)}.btn.ghost{background:#f1f3f7;color:#3b4353}
+table{width:100%;border-collapse:collapse} th,td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:13px;vertical-align:middle} th{color:var(--muted);font-weight:650}
+.status{display:inline-block;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:700}.status.ok{background:#e8f7f1;color:var(--ok)}.status.wait{background:#fff4db;color:var(--warn)}.status.blue{background:#eaf1ff;color:#2b5cc9}.status.red{background:#ffebea;color:var(--danger)}
+.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px} label{display:grid;gap:6px;font-size:13px;color:#4b5563} input,select{width:100%;padding:11px;border:1px solid var(--line);border-radius:11px;background:white;color:var(--text)}
+.section-title{font-size:13px;font-weight:800;margin:18px 0 9px;color:#3d4659}
+.custom-items{display:grid;gap:8px;margin:10px 0}.item{display:flex;justify-content:space-between;gap:12px;padding:10px 12px;background:var(--surface2);border:1px solid var(--line);border-radius:11px}.item button{border:0;background:transparent;color:var(--danger)}
+.inline{display:flex;gap:8px;align-items:end}.inline > *{flex:1}
+.summary{background:linear-gradient(180deg,#f9f8ff,#fff);border:1px solid #ded9ff;border-radius:16px;padding:16px}.sumrow{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid #ece9ff}.sumrow:last-child{border-bottom:0}.sumrow.total{font-size:18px;font-weight:800}
+.flow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.step{background:#efedff;color:#463ab2;padding:9px 12px;border-radius:999px;font-size:12px;font-weight:700}.arrow{color:#9aa0ad}
+.list{display:grid;gap:10px}.row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}
+.prescription{background:#fcfcfd;border:1px dashed #c9ced9;border-radius:14px;padding:16px}.prescription p{margin:6px 0;font-size:13px}
+.callout{background:#fffaf0;border:1px solid #f3dfae;padding:13px;border-radius:12px;color:#6b4c12;font-size:13px}
+.hidden{display:none!important}
+.modal{position:fixed;inset:0;background:rgba(12,16,27,.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:30}.modal.open{display:flex}.modal-card{max-width:520px;width:100%;background:white;border-radius:18px;padding:20px;box-shadow:0 30px 90px rgba(0,0,0,.25)}.modal-card h3{margin-top:0}
+.toast{position:fixed;right:20px;bottom:20px;background:#1f2937;color:white;padding:12px 14px;border-radius:10px;opacity:0;transform:translateY(10px);transition:.2s;pointer-events:none}.toast.show{opacity:1;transform:translateY(0)}
+@media(max-width:1100px){.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:850px){.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.main{padding:18px}.g4,.g2,.form{grid-template-columns:1fr}.header{flex-direction:column}.inline{flex-direction:column;align-items:stretch}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="logo">IM</div><div><strong>IMCP</strong><small>Protótipo • Protocolos Injetáveis</small></div></div>
+    <div class="nav">
+      <button class="active" data-screen="dashboard">Dashboard</button>
+      <button data-screen="orcamentos">Orçamentos</button>
+      <button data-screen="novo">Novo orçamento</button>
+      <button data-screen="prescricoes">Prescrições</button>
+      <button data-screen="repasses">Repasses</button>
+      <button data-screen="caixa">Fluxo de caixa</button>
+      <button data-screen="estoque">Estoque • Fase 2</button>
+    </div>
+    <div class="side-footer">Mockup demonstrativo. Valores e indicadores são ilustrativos e servem apenas para representar a experiência proposta.</div>
+  </aside>
+
+  <main class="main">
+    <div class="header"><div><h1 id="title">Dashboard</h1><p id="subtitle">Visão consolidada da operação.</p></div><div class="badges"><span class="badge">IMCP</span><span class="badge purple">Fase 1</span></div></div>
+
+    <section id="dashboard" class="screen active">
+      <div class="grid g4">
+        <div class="card metric"><span class="label">Orçamentos no mês</span><strong>37</strong><small>Indicador ilustrativo</small></div>
+        <div class="card metric"><span class="label">Aprovados</span><strong>29</strong><small>78% de conversão</small></div>
+        <div class="card metric"><span class="label">Repasses a fechar</span><strong>46</strong><small>Referência do cenário apresentado</small></div>
+        <div class="card metric"><span class="label">Recebimentos</span><strong>R$ 84.320</strong><small>Valor ilustrativo</small></div>
+      </div>
+      <div class="grid g2" style="margin-top:16px">
+        <div class="card"><h3>Fluxo principal</h3><div class="flow"><span class="step">Orçamento</span><span class="arrow">→</span><span class="step">Aprovação</span><span class="arrow">→</span><span class="step">Prescrição</span><span class="arrow">→</span><span class="step">Pagamento</span><span class="arrow">→</span><span class="step">Repasse</span></div><p style="color:var(--muted);font-size:13px;margin-top:14px">A proposta é registrar os dados uma vez e reaproveitá-los no restante do processo, reduzindo o fechamento manual.</p></div>
+        <div class="card"><h3>Indicadores gerenciais</h3><div class="list"><div class="row"><span>Ticket médio</span><strong>R$ 2.907</strong></div><div class="row"><span>Protocolos fixos</span><strong>58%</strong></div><div class="row"><span>Personalizados</span><strong>42%</strong></div><div class="row"><span>Pagamento à vista</span><strong>71%</strong></div></div></div>
+      </div>
+    </section>
+
+    <section id="orcamentos" class="screen">
+      <div class="card">
+        <div class="toolbar"><div><h3 style="margin-bottom:4px">Orçamentos</h3><span style="color:var(--muted);font-size:12px">Histórico e acompanhamento de status</span></div><button class="btn primary goto" data-target="novo">+ Novo orçamento</button></div>
+        <table><thead><tr><th>Paciente</th><th>Médico</th><th>Protocolo</th><th>Sessões</th><th>Total</th><th>Status</th></tr></thead><tbody>
+          <tr><td>Manuela A.</td><td>Dra. Manuela</td><td>Personalizado</td><td>3</td><td>R$ 1.470</td><td><span class="status ok">Aprovado</span></td></tr>
+          <tr><td>Vanderley S.</td><td>Dra. Manuela</td><td>Ferro</td><td>2</td><td>R$ 900</td><td><span class="status wait">Aguardando</span></td></tr>
+          <tr><td>Rejane P.</td><td>Dra. Manuela</td><td>Personalizado</td><td>4</td><td>R$ 2.100</td><td><span class="status blue">Em pagamento</span></td></tr>
+        </tbody></table>
+      </div>
+    </section>
+
+    <section id="novo" class="screen">
+      <div class="grid g2">
+        <div class="card">
+          <h3>Novo orçamento</h3>
+          <div class="form">
+            <label>Paciente<input id="paciente" value="Manuela A."></label>
+            <label>Médico<select><option>Dra. Manuela</option><option>Dra. Ana Paula</option><option>Dr. Leandro</option></select></label>
+            <label>Tipo de protocolo<select id="tipo"><option value="fixo">Fixo</option><option value="personalizado">Personalizado</option></select></label>
+            <label>Número de sessões<input id="sessoes" type="number" min="1" value="3"></label>
+          </div>
+          <div id="boxFixo"><div class="section-title">Protocolo fixo</div><label>Selecione<select id="protocolo"><option value="250">Vitamina D • R$ 250</option><option value="450">Ferro • R$ 450 por sessão</option><option value="310">Antioxidante • R$ 310</option></select></label></div>
+          <div id="boxPersonalizado" class="hidden">
+            <div class="section-title">Composição personalizada</div>
+            <div class="inline"><label>Ativo<select id="ativo"><option value="120">Pool de minerais • R$ 120</option><option value="80">Glutationa • R$ 80</option><option value="55">Zinco • R$ 55</option><option value="95">Trio metilador • R$ 95</option></select></label><button id="addAtivo" class="btn soft">Adicionar</button></div>
+            <div id="itens" class="custom-items"></div>
+            <div class="form"><label>Material<input id="material" type="number" value="24"></label><label>Taxa de sala<input id="sala" type="number" value="35"></label></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Resumo da precificação</h3>
+          <div class="summary"><div class="sumrow"><span>Custo base</span><strong id="custo">R$ 250,00</strong></div><div class="sumrow"><span>Preço mínimo sugerido</span><strong id="minimo">R$ 500,00</strong></div><div class="sumrow"><span>Valor por sessão</span><strong id="sessaoValor">R$ 500,00</strong></div><div class="sumrow total"><span>Total do plano</span><strong id="total">R$ 1.500,00</strong></div></div>
+          <div class="callout" style="margin-top:14px">Simulação de interface. As regras de margem, custo médico e repasse devem ser parametrizadas no projeto real.</div>
+          <div class="toolbar" style="margin-top:16px"><button class="btn ghost" id="saveDraft">Salvar rascunho</button><button class="btn primary" id="generate">Gerar orçamento</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="prescricoes" class="screen">
+      <div class="grid g2">
+        <div class="card"><h3>Prescrição gerada</h3><div class="prescription"><p><strong>Paciente:</strong> Manuela A.</p><p><strong>Tratamento:</strong> Soro personalizado</p><p><strong>Sessões:</strong> 3</p><p><strong>Ativos:</strong> Pool de minerais, Glutationa, Zinco</p><p><strong>Orientações:</strong> registrar aplicação, lote, validade e responsável.</p></div></div>
+        <div class="card"><h3>Controle de sessões</h3><div class="list"><div class="row"><span>Sessão 1</span><span class="status ok">Realizada</span></div><div class="row"><span>Sessão 2</span><span class="status wait">Agendada</span></div><div class="row"><span>Sessão 3</span><span class="status blue">Pendente</span></div></div></div>
+      </div>
+    </section>
+
+    <section id="repasses" class="screen">
+      <div class="card"><div class="toolbar"><h3>Apuração de repasses</h3><span class="badge purple">Setembro</span></div>
+        <table><thead><tr><th>Paciente</th><th>Médico</th><th>Valor pago</th><th>Custo</th><th>Valor líquido</th><th>Repasse</th><th>Status</th></tr></thead><tbody>
+          <tr><td>Vanderley</td><td>Dra. Manuela</td><td>R$ 2.100</td><td>R$ 611</td><td>R$ 1.489</td><td>R$ 1.288</td><td><span class="status wait">Conferir</span></td></tr>
+          <tr><td>Rejane</td><td>Dra. Manuela</td><td>R$ 930</td><td>R$ 230</td><td>R$ 700</td><td>Conforme recebimento</td><td><span class="status blue">Parcial</span></td></tr>
+        </tbody></table>
+      </div>
+    </section>
+
+    <section id="caixa" class="screen">
+      <div class="grid g2">
+        <div class="card"><h3>Resumo financeiro</h3><div class="list"><div class="row"><span>Recebimentos</span><strong>R$ 84.320</strong></div><div class="row"><span>Repasses previstos</span><strong>R$ 22.480</strong></div><div class="row"><span>Despesas operacionais</span><strong>R$ 6.130</strong></div><div class="row"><span>Saldo parcial</span><strong>R$ 55.710</strong></div></div></div>
+        <div class="card"><h3>Formas de pagamento</h3><div class="list"><div class="row"><span>À vista</span><strong>71%</strong></div><div class="row"><span>Cartão parcelado</span><strong>21%</strong></div><div class="row"><span>Por sessão</span><strong>6%</strong></div><div class="row"><span>Pix parcelado</span><strong>2%</strong></div></div></div>
+      </div>
+    </section>
+
+    <section id="estoque" class="screen">
+      <div class="card"><h3>Fase 2 • Estoque e dispensação</h3><div class="flow"><span class="step">Prescrição aprovada</span><span class="arrow">→</span><span class="step">Código de barras</span><span class="arrow">→</span><span class="step">Baixa de estoque</span><span class="arrow">→</span><span class="step">Estoque mínimo</span><span class="arrow">→</span><span class="step">Solicitação de compra</span></div><div class="callout" style="margin-top:16px">Essa evolução foi tratada na reunião como um segundo momento do projeto.</div></div>
+    </section>
+  </main>
+</div>
+
+<div id="modal" class="modal"><div class="modal-card"><h3>Orçamento gerado</h3><p id="modalText"></p><div style="display:flex;justify-content:flex-end"><button class="btn primary" id="closeModal">Fechar</button></div></div></div>
+<div id="toast" class="toast"></div>
+
+<script>
+const screens=[...document.querySelectorAll('.screen')], nav=[...document.querySelectorAll('.nav button')];
+const titles={
+dashboard:['Dashboard','Visão consolidada da operação.'],
+orcamentos:['Orçamentos','Histórico, status e acompanhamento dos tratamentos.'],
+novo:['Novo orçamento','Monte protocolos fixos ou personalizados e simule a precificação.'],
+prescricoes:['Prescrições','Informações geradas a partir do orçamento aprovado.'],
+repasses:['Repasses','Apuração dos valores por médico e fechamento do período.'],
+caixa:['Fluxo de caixa','Recebimentos e visão financeira operacional.'],
+estoque:['Estoque • Fase 2','Visão futura para dispensação e reposição.']
+};
+function go(id){screens.forEach(s=>s.classList.toggle('active',s.id===id));nav.forEach(b=>b.classList.toggle('active',b.dataset.screen===id));document.getElementById('title').textContent=titles[id][0];document.getElementById('subtitle').textContent=titles[id][1]}
+nav.forEach(b=>b.onclick=()=>go(b.dataset.screen));document.querySelectorAll('.goto').forEach(b=>b.onclick=()=>go(b.dataset.target));
+
+const tipo=document.getElementById('tipo'),boxF=document.getElementById('boxFixo'),boxP=document.getElementById('boxPersonalizado');
+const protocolo=document.getElementById('protocolo'),sessoes=document.getElementById('sessoes'),ativo=document.getElementById('ativo'),itensEl=document.getElementById('itens'),material=document.getElementById('material'),sala=document.getElementById('sala');
+let itens=[];
+const money=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+function render(){itensEl.innerHTML='';itens.forEach((x,i)=>{const d=document.createElement('div');d.className='item';d.innerHTML='<span>'+x.name+'</span><span><strong>'+money(x.value)+'</strong> <button data-i="'+i+'">×</button></span>';itensEl.appendChild(d)});itensEl.querySelectorAll('button').forEach(b=>b.onclick=()=>{itens.splice(+b.dataset.i,1);render();calc()})}
+function calc(){const n=Math.max(1,+sessoes.value||1);let base=tipo.value==='fixo'?+protocolo.value:(itens.reduce((a,b)=>a+b.value,0)+(+material.value||0)+(+sala.value||0));let min=Math.ceil((base*2)/10)*10;document.getElementById('custo').textContent=money(base);document.getElementById('minimo').textContent=money(min);document.getElementById('sessaoValor').textContent=money(min);document.getElementById('total').textContent=money(min*n)}
+tipo.onchange=()=>{const f=tipo.value==='fixo';boxF.classList.toggle('hidden',!f);boxP.classList.toggle('hidden',f);calc()};[protocolo,sessoes,material,sala].forEach(x=>x.addEventListener('input',calc));
+document.getElementById('addAtivo').onclick=e=>{e.preventDefault();const o=ativo.options[ativo.selectedIndex];itens.push({name:o.text.split(' • ')[0],value:+o.value});render();calc()};
+function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1800)}
+document.getElementById('saveDraft').onclick=()=>toast('Rascunho salvo no protótipo.');
+document.getElementById('generate').onclick=()=>{document.getElementById('modalText').textContent='Orçamento de '+document.getElementById('paciente').value+' gerado com valor total de '+document.getElementById('total').textContent+'.';document.getElementById('modal').classList.add('open')};
+document.getElementById('closeModal').onclick=()=>document.getElementById('modal').classList.remove('open');
+calc();
+</script>
+</body>
+</html>
