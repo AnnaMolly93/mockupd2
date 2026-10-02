@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="ProgId" content="Word.Document">
+<meta name="Generator" content="ChatGPT">
+<title>IMCP - Proposta de Solução</title>
+<style>
+body{font-family:Arial,sans-serif;color:#1f2937;line-height:1.45;margin:36px}
+h1{font-size:28px;color:#312e81;margin-bottom:6px}h2{font-size:20px;color:#312e81;margin-top:28px;border-bottom:1px solid #ddd;padding-bottom:5px}h3{font-size:16px;color:#4338ca;margin-top:18px}
+p{margin:7px 0}ul{margin-top:6px}li{margin:4px 0}.cover{background:#f3f1ff;border:1px solid #d8d3ff;padding:28px;margin-bottom:24px}
+.callout{background:#fffaf0;border-left:4px solid #b7791f;padding:12px;margin:12px 0}.good{background:#effcf6;border-left:4px solid #0f766e;padding:12px;margin:12px 0}
+.diagram{font-family:"Courier New",monospace;background:#fafbff;border:1px solid #dce0f5;padding:14px;white-space:pre-wrap;margin:12px 0}
+table{border-collapse:collapse;width:100%;margin:10px 0 18px}th,td{border:1px solid #d9dde5;padding:8px;vertical-align:top}th{background:#f5f6f8;text-align:left}
+.small{color:#6b7280;font-size:11px}
+</style>
+</head>
+<body>
+<div class="cover">
+<h1>IMCP — Evolução do Sistema Comercial / Gestão de Protocolos Injetáveis</h1>
+<p><strong>Documento de entendimento, desenho de solução e direcionamento de implantação</strong></p>
+<p>Baseado na reunião “IMCP — Evolução Sistema Comercial”, realizada em 29/09/2026.</p>
+</div>
+
+<h2>1. Resumo executivo</h2>
+<p>O IMCP possui hoje um processo de construção de protocolos injetáveis, orçamento, prescrição, registro de pagamento, fechamento financeiro e repasse médico que depende de WhatsApp, Word, PDFs e múltiplas planilhas. O orçamento em si é relativamente rápido; o maior esforço está no fechamento, quando informações já utilizadas precisam ser reconstruídas para apuração de custos e repasses.</p>
+<p>A solução proposta é uma aplicação web independente, com cadastro centralizado das tabelas de referência, motor de precificação, geração de orçamento e prescrição, registro de pagamento, cálculo de repasse, fluxo de caixa e dashboard.</p>
+<div class="good"><strong>Diretriz principal:</strong> registrar os dados uma única vez no início do processo e reaproveitá-los em todas as etapas posteriores.</div>
+
+<h2>2. O que o cliente quer resolver</h2>
+<ul>
+<li>Reduzir o uso simultâneo de várias planilhas.</li>
+<li>Evitar refazer cálculos no fechamento do mês.</li>
+<li>Centralizar as referências de preço e custo.</li>
+<li>Suportar protocolos com preço fixo e protocolos personalizados.</li>
+<li>Gerar orçamento e prescrição a partir da mesma base de dados.</li>
+<li>Automatizar ou apoiar o cálculo de repasses médicos.</li>
+<li>Registrar pagamentos e alimentar o fluxo de caixa.</li>
+<li>Disponibilizar indicadores gerenciais.</li>
+<li>Preparar a solução para uma futura etapa de estoque e dispensação.</li>
+</ul>
+
+<h2>3. Processo atual — AS IS</h2>
+<div class="diagram">Médico / responsável define o tratamento
+        ↓
+Solicitação / indicação chega por WhatsApp
+        ↓
+Consulta a tabelas de preço e custo
+        ↓
+Cálculo manual do protocolo
+        ↓
+Montagem do orçamento em Word
+        ↓
+Geração / salvamento em PDF
+        ↓
+Paciente aprova
+        ↓
+Montagem da prescrição
+        ↓
+Registro do pagamento
+        ↓
+Preenchimento de planilhas
+        ↓
+Fechamento do mês
+        ↓
+Recalcular custo / revisar prescrição
+        ↓
+Apurar repasse
+        ↓
+Encaminhar dados ao financeiro</div>
+
+<h3>3.1 Dores observadas</h3>
+<ul>
+<li>Informação fragmentada em diferentes ferramentas.</li>
+<li>Retrabalho entre orçamento e fechamento.</li>
+<li>Dependência de conferência manual.</li>
+<li>Necessidade de consultar novamente prescrições já executadas.</li>
+<li>Risco de perda de rastreabilidade quando o cálculo original não fica salvo de forma estruturada.</li>
+<li>Escalabilidade limitada conforme o número de pacientes e repasses aumenta.</li>
+</ul>
+
+<h2>4. Processo futuro — TO BE</h2>
+<div class="diagram">Cadastros / tabelas de referência
+        ↓
+Paciente + médico
+        ↓
+Tipo de protocolo
+   ┌───────────────┴───────────────┐
+   │                               │
+Protocolo fixo             Protocolo personalizado
+   │                               │
+   └───────────────┬───────────────┘
+                   ↓
+            Motor de precificação
+                   ↓
+             Gerar orçamento
+                   ↓
+                Aprovação
+          ┌────────┴────────┐
+          │                 │
+       Recusado          Aprovado
+                            ↓
+                    Gerar prescrição
+                            ↓
+                    Registrar pagamento
+                            ↓
+          ┌─────────────────┼──────────────────┐
+          │                 │                  │
+     Fluxo de caixa      Repasse           Indicadores
+          │                 │                  │
+          └─────────────────┴──────────────────┘
+                            ↓
+                        Dashboard</div>
+
+<h2>5. Escopo funcional sugerido — Fase 1</h2>
+
+<h3>5.1 Cadastros e tabelas</h3>
+<ul>
+<li>Ativos / medicamentos.</li>
+<li>Fornecedores.</li>
+<li>Preço de compra / custo unitário.</li>
+<li>Custo real IMCP.</li>
+<li>Custo utilizado nas regras de repasse.</li>
+<li>Custos de material.</li>
+<li>Custos de sala.</li>
+<li>Médicos e regras associadas.</li>
+<li>Protocolos fixos.</li>
+<li>Parâmetros de precificação e desconto.</li>
+</ul>
+
+<h3>5.2 Protocolos</h3>
+<p>O sistema deverá permitir trabalhar com dois cenários principais:</p>
+<ul>
+<li><strong>Protocolos fixos:</strong> itens cujo valor e composição já são conhecidos, variando principalmente em quantidade ou número de sessões.</li>
+<li><strong>Protocolos personalizados:</strong> combinação de ativos selecionados conforme a necessidade do paciente, considerando também materiais, tipo de aplicação e demais custos parametrizados.</li>
+</ul>
+
+<h3>5.3 Motor de precificação</h3>
+<p>O cálculo deve ser parametrizado. Não é recomendável gravar percentuais diretamente no código, porque a reunião apresenta mais de uma lógica de custo e margem.</p>
+<table>
+<tr><th>Componente</th><th>Função</th></tr>
+<tr><td>Custo de ativos</td><td>Somatório dos medicamentos / insumos selecionados.</td></tr>
+<tr><td>Material</td><td>Kit e consumíveis conforme tipo de aplicação.</td></tr>
+<tr><td>Sala</td><td>Taxa / tempo de utilização quando aplicável.</td></tr>
+<tr><td>Custo real</td><td>Visão interna de custo do IMCP.</td></tr>
+<tr><td>Custo para repasse</td><td>Base específica utilizada conforme a regra médica.</td></tr>
+<tr><td>Preço mínimo</td><td>Limite comercial calculado pelo sistema.</td></tr>
+<tr><td>Preço apresentado</td><td>Valor efetivamente apresentado ao paciente.</td></tr>
+</table>
+
+<h3>5.4 Orçamento</h3>
+<ul>
+<li>Montagem do tratamento em tela.</li>
+<li>Registro do número de sessões.</li>
+<li>Preço por sessão e valor total.</li>
+<li>Condição de pagamento.</li>
+<li>Desconto dentro dos parâmetros permitidos.</li>
+<li>Geração de PDF.</li>
+<li>Histórico e versionamento.</li>
+<li>Status: rascunho, enviado, aprovado, recusado e em negociação.</li>
+</ul>
+
+<h3>5.5 Prescrição</h3>
+<ul>
+<li>Gerada a partir do tratamento aprovado.</li>
+<li>Lista de ativos e doses.</li>
+<li>Organização por sessão.</li>
+<li>Orientações para enfermagem.</li>
+<li>Registro de data, profissional, lote e validade.</li>
+</ul>
+
+<h3>5.6 Pagamento</h3>
+<ul>
+<li>À vista.</li>
+<li>Cartão parcelado.</li>
+<li>Pagamento por sessão.</li>
+<li>Outros formatos / exceções, como parcelamento via Pix.</li>
+</ul>
+<p>A forma de pagamento deverá ser considerada na lógica de repasse quando aplicável.</p>
+
+<h3>5.7 Repasse médico</h3>
+<p>Este é um dos principais ganhos operacionais do projeto. O repasse deverá ser construído desde a aprovação e o pagamento, evitando reconstrução posterior.</p>
+<table>
+<tr><th>Informação</th><th>Uso</th></tr>
+<tr><td>Paciente</td><td>Identificação do atendimento.</td></tr>
+<tr><td>Médico</td><td>Responsável pelo repasse.</td></tr>
+<tr><td>Tratamento</td><td>Protocolo / composição.</td></tr>
+<tr><td>Valor pago</td><td>Base financeira recebida.</td></tr>
+<tr><td>Custo</td><td>Custo correspondente ao tratamento.</td></tr>
+<tr><td>Valor líquido</td><td>Valor após descontos definidos.</td></tr>
+<tr><td>Regra de repasse</td><td>Percentual / lógica parametrizada.</td></tr>
+<tr><td>Valor do repasse</td><td>Resultado calculado pelo sistema.</td></tr>
+</table>
+
+<h3>5.8 Fluxo de caixa</h3>
+<ul>
+<li>Registro do pagamento uma única vez.</li>
+<li>Visão por data e forma de pagamento.</li>
+<li>Exportação / consulta pelo financeiro.</li>
+<li>Relacionamento com orçamento e repasse.</li>
+</ul>
+
+<h3>5.9 Dashboard</h3>
+<ul>
+<li>Orçamentos emitidos e aprovados.</li>
+<li>Taxa de conversão.</li>
+<li>Valor vendido e recebido.</li>
+<li>Ticket médio.</li>
+<li>Protocolos fixos x personalizados.</li>
+<li>Repasses por médico.</li>
+<li>Valores pendentes.</li>
+<li>Formas de pagamento.</li>
+</ul>
+
+<h2>6. Arquitetura sugerida</h2>
+<div class="diagram">Usuários
+  ├── Equipe assistencial / farmacêutica
+  ├── Financeiro
+  └── Gestão
+           ↓
+     Aplicação Web Responsiva
+           ↓
+        API / Backend
+           ↓
+  ┌────────┼───────────────┐
+  │        │               │
+Banco   Storage       Autenticação
+de dados de arquivos   e permissões
+
+Evoluções futuras:
+• Sistema comercial atual → dashboard consolidado
+• Figo / prontuário → integração opcional
+• Estoque / compras → Fase 2</div>
+
+<h3>6.1 Stack possível</h3>
+<p>Uma opção enxuta para a solução seria frontend web moderno + API + PostgreSQL, utilizando serviços gerenciados para autenticação e armazenamento. A escolha final deve considerar padrões internos, requisitos de segurança e preferência do cliente.</p>
+
+<h2>7. Fase 2 — Estoque e dispensação</h2>
+<div class="diagram">Prescrição / atendimento
+        ↓
+Leitura de código de barras
+        ↓
+Baixa automática do estoque
+        ↓
+Registro do consumo por atendimento
+        ↓
+Alerta de estoque mínimo
+        ↓
+Solicitação / apoio ao processo de compras</div>
+<p>A Fase 2 deve ser tratada separadamente para não ampliar excessivamente o escopo inicial.</p>
+
+<h2>8. Investimentos além do desenvolvimento</h2>
+<p>Os valores abaixo são estimativas de planejamento. A contratação final dependerá dos provedores, volume de uso, política de segurança e stack escolhida.</p>
+<table>
+<tr><th>Categoria</th><th>Para que serve</th><th>Faixa estimada</th></tr>
+<tr><td>Hospedagem do frontend</td><td>Publicação e distribuição da aplicação web.</td><td>R$ 0 a R$ 100/mês</td></tr>
+<tr><td>Backend / banco / autenticação</td><td>API, banco de dados, controle de usuários e persistência.</td><td>R$ 80 a R$ 600/mês</td></tr>
+<tr><td>Storage de arquivos</td><td>PDFs, prescrições e anexos.</td><td>Pode estar incluso ou variar por consumo</td></tr>
+<tr><td>Domínio</td><td>Endereço próprio da aplicação.</td><td>R$ 40 a R$ 90/ano</td></tr>
+<tr><td>E-mails / notificações</td><td>Mensagens transacionais e alertas.</td><td>R$ 0 a R$ 150/mês</td></tr>
+<tr><td>Backup / segurança</td><td>Retenção, backup, logs e controles adicionais.</td><td>R$ 0 a R$ 200/mês</td></tr>
+<tr><td>Treinamento</td><td>Capacitação de usuários.</td><td>Projeto pontual / sob escopo</td></tr>
+<tr><td>Suporte e manutenção</td><td>Correções e pequenas evoluções após implantação.</td><td>Pacote mensal ou banco de horas</td></tr>
+<tr><td>Equipamentos Fase 2</td><td>Leitor de código de barras, etiquetas e possíveis periféricos.</td><td>R$ 300 a R$ 2.000+ por posto</td></tr>
+<tr><td>LGPD / jurídico</td><td>Revisão de termos, acessos, retenção e políticas.</td><td>Opcional / consultivo</td></tr>
+</table>
+
+<div class="callout"><strong>Importante:</strong> separar no comercial o investimento de desenvolvimento do custo recorrente de operação evita a percepção de que a solução terá apenas um custo inicial.</div>
+
+<h2>9. Estrutura sugerida da proposta comercial</h2>
+<ol>
+<li><strong>Discovery e refinamento:</strong> validação detalhada das regras de preço, repasse e pagamento.</li>
+<li><strong>Desenvolvimento da Fase 1:</strong> aplicação web e módulos descritos neste documento.</li>
+<li><strong>Homologação e implantação:</strong> testes, ajustes e publicação.</li>
+<li><strong>Treinamento:</strong> preparação da equipe.</li>
+<li><strong>Sustentação:</strong> suporte pós-go-live.</li>
+<li><strong>Fase 2:</strong> estoque, código de barras e compras.</li>
+</ol>
+
+<h2>10. Pontos que ainda precisam de refinamento</h2>
+<ul>
+<li>Regra exata de cálculo do custo real.</li>
+<li>Regra exata do acréscimo usado como custo do médico.</li>
+<li>Margem / multiplicador usado na precificação ao paciente.</li>
+<li>Limites e regras de desconto.</li>
+<li>Regras de repasse por profissional.</li>
+<li>Tratamento do pagamento por sessão, parcelado no cartão e parcelado via Pix.</li>
+<li>Perfis de acesso.</li>
+<li>Modelo final dos documentos gerados.</li>
+<li>Dados que devem permanecer integrados a sistemas existentes, se houver.</li>
+</ul>
+
+<h2>11. Próximos passos</h2>
+<ul>
+<li>Validar este desenho com o IMCP.</li>
+<li>Realizar refinamento funcional com a responsável pelo processo.</li>
+<li>Definir backlog da Fase 1.</li>
+<li>Estimar horas por módulo.</li>
+<li>Definir stack e custo de infraestrutura.</li>
+<li>Apresentar proposta comercial e cronograma.</li>
+</ul>
+
+<p class="small">Documento elaborado como base funcional e comercial. As faixas de investimento são estimativas e não representam orçamento de fornecedor.</p>
+</body>
+</html>
